@@ -1,5 +1,20 @@
+Configure a job to run on a node
+--
+Dashboard -- javaapp -- Configuration -- general
+select "Restrict where this project can be run"
+Label Expression: linux
+
+save
+
+build with parameter
+
+Update the pipeline to run the job on linux node
+----
+
 pipeline {
-    agent any
+    agent {
+        label 'linux'
+    }
 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
@@ -18,7 +33,7 @@ pipeline {
             steps {
                 sh "mvn -Dmaven.test.failure.ignore=true -f api-gateway/ clean package"
             }
-                    
+                            
         }
         
         stage('archive') {

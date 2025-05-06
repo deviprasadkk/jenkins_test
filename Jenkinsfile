@@ -1,21 +1,6 @@
-Configure a job to run on a node
---
-Dashboard -- javaapp -- Configuration -- general
-select "Restrict where this project can be run"
-Label Expression: linux
-
-save
-
-build with parameter
-
-Update the pipeline to run the job on linux node
-----
-
 pipeline {
-    agent {
-        label 'linux'
-    }
-
+    agent any
+    
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven "MVN3"
@@ -49,6 +34,9 @@ pipeline {
         }
         
         stage('test') {
+            agent {
+                label 'linux'
+            }
             steps {
                 sh "echo testing"
             }

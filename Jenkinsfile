@@ -1,46 +1,34 @@
 pipeline {
-    agent {
-        label 'windows'
+    agent any
+    
+    triggers {
+        cron("*/5 * * * *")
     }
     
-    tools {
-        // Install the Maven version configured as "M3" and add it to the path.
-        maven "MVN3"
-    }
-
     stages {
-        stage('pull scm') {
+        stage('setup parameter') {
             steps {
-                // Get some code from a GitHub repository
-                git credentialsId: 'github', url: 'git@github.com:deviprasadkk/jenkins_test.git'
+                script {
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ["dev", "uat", "prod"],
+                                name: "ENVIRONMENT"
+                            ),
+                            string(
+                                defaultValue: "training",
+                                name: "STRING"
+                            )
+                        ])
+                    ])
+                }
             }
         }
         
-        stage('Build') {
+        stage('print parameter') {
             steps {
-                bat "mvn -Dmaven.test.failure.ignore=true -f api-gateway/ clean package"
-            }
-                            
-        }
-        
-        stage('archive') {
-            steps {
-                archiveArtifacts artifacts: 'api-gateway/target/*.jar', followSymlinks: false
-            }
-        }
-        
-        stage('publish test result') {
-            steps {
-                junit 'api-gateway/target/surefire-reports/*.xml'
-            }
-        }
-
-        stage('test') {
-            agent {
-                label 'linux'
-            }
-            steps {
-               sh "echo testing"
+                echo "choice parameter is $ENVIRONMENT"
+                echo "string parameter is $STRING"
             }
         }
     }

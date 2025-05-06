@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'windows'
+    }
     
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
@@ -16,7 +18,7 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh "mvn -Dmaven.test.failure.ignore=true -f api-gateway/ clean package"
+                bat "mvn -Dmaven.test.failure.ignore=true -f api-gateway/ clean package"
             }
                             
         }
@@ -32,13 +34,13 @@ pipeline {
                 junit 'api-gateway/target/surefire-reports/*.xml'
             }
         }
-        
+
         stage('test') {
             agent {
                 label 'linux'
             }
             steps {
-                sh "echo testing"
+               sh "echo testing"
             }
         }
     }
